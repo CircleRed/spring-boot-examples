@@ -16,7 +16,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport{
 	
-	@Bean
+	@Override
+    @Bean
 	public KeyGenerator keyGenerator() {
         return new KeyGenerator() {
             @Override
