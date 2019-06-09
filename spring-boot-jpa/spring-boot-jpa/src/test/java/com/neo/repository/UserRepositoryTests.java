@@ -12,60 +12,80 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserRepositoryTests {
 
-	@Resource
+    @Resource
     private UserRepository userRepository;
 
-	@Test
-	public void testSave() {
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
-		String formattedDate = dateFormat.format(date);
-		
-		userRepository.save(new User("aa", "aa123456","aa@126.com", "aa",  formattedDate));
-		userRepository.save(new User("bb", "bb123456","bb@126.com", "bb",  formattedDate));
-		userRepository.save(new User("cc", "cc123456","cc@126.com", "cc",  formattedDate));
+    @Test
+    public void testSave() {
+        Date date = new Date();
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
+        String formattedDate = dateFormat.format(date);
+
+        userRepository.save(new User("aa", "aa123456", "aa@126.com", "aa", formattedDate));
+        userRepository.save(new User("bb", "bb123456", "bb@126.com", "bb", formattedDate));
+        userRepository.save(new User("cc", "cc123456", "cc@126.com", "cc", formattedDate));
 
 //		Assert.assertEquals(3, userRepository.findAll().size());
 //		Assert.assertEquals("bb", userRepository.findByUserNameOrEmail("bb", "bb@126.com").getNickName());
 //		userRepository.delete(userRepository.findByUserName("aa"));
-	}
+    }
 
 
-	@Test
-	public void testBaseQuery() {
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
-		String formattedDate = dateFormat.format(date);
-		User user=new User("ff", "ff123456","ff@126.com", "ff",  formattedDate);
-		userRepository.findAll();
-		userRepository.findById(3L);
-		userRepository.save(user);
-		user.setId(2L);
-		userRepository.delete(user);
-		userRepository.count();
-		userRepository.existsById(3L);
-	}
+    @Test
+    public void testBaseQuery() {
+        //查找所有
+        List<User> all = userRepository.findAll();
+        System.out.println(all);
 
-	@Test
-	public void testCustomSql() {
-		userRepository.modifyById("neo",3L);
-		userRepository.deleteById(3L);
-		userRepository.findByEmail("ff@126.com");
-	}
+        //增加单个
+        Date date = new Date();
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
+        String formattedDate = dateFormat.format(date);
+        User user = new User("ff", "ff123456", "ff@126.com", "ff", formattedDate);
+        user.setId(2L);
+        userRepository.save(user);
+
+        //userRepository.delete(user);
 
 
-	@Test
-	public void testPageQuery()  {
-		int page=1,size=2;
-		Sort sort = new Sort(Sort.Direction.DESC, "id");
-		Pageable pageable = PageRequest.of(page, size, sort);
-		userRepository.findALL(pageable);
-		userRepository.findByNickName("aa", pageable);
-	}
+        //查找单个
+        Optional<User> user1 = userRepository.findById(3L);
+        System.out.println(userRepository.existsById(3L) + ": " + user1.get());
+
+        //计数
+        long count = userRepository.count();
+        System.out.println(count);
+
+
+    }
+
+    @Test
+    public void testCustomSql() {
+        System.out.println(userRepository.modifyById("neo", 3L));
+        //userRepository.deleteById(3L);
+        System.out.println(userRepository.findByEmail("ff@126.com"));
+    }
+
+
+    @Test
+    public void testPageQuery() {
+        int page = 0;
+        int size = 2;
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(page, size, sort);
+        System.out.println(userRepository.findALL(pageable).getContent());
+        System.out.println("=================");
+        System.out.println(userRepository.findByNickName("aa", pageable).getContent());
+        System.out.println("=================");
+        System.out.println(userRepository.findByNickNameLike("%a%", pageable).getContent());
+
+    }
 
 }

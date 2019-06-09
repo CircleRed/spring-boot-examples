@@ -36,5 +36,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Slice<User> findByNickNameAndEmail(String nickName, String email,Pageable pageable);
 
+    Page<User> findByNickNameLike(String nickName, Pageable pageable);
+
+
 
 }
